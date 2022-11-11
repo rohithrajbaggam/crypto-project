@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-rz9_9i&@u6^#-7evwtky1w(yo5hb!_ts#=fcky-#x!a3)tx+sr
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # packages
     "rest_framework",
+    "corsheaders",
     # Apps
     "coinData",
     "analyzer"
@@ -47,6 +48,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -76,6 +78,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "core.wsgi.application"
 
+CORS_ALLOW_ALL_ORIGINS = True 
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases

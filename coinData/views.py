@@ -60,7 +60,13 @@ class singleCoinPriceAPIView(views.APIView):
             }
             req_data = session.get(url=f"{COIN_MARKET_API_DOMAIN}simple/price", 
             params=params, headers=header)
-            return Response(req_data.json())
+            return_data = {
+                "coin" : request.GET["ids"],
+                "currencies" : request.GET["vs_currencies"],
+                "price" : req_data.json()[f'{request.GET["ids"]}'][f'{request.GET["vs_currencies"]}']
+            }
+            
+            return Response(return_data)
         except:
             return Response({"message" : "Internal Server Error"}, status=status.HTTP_400_BAD_REQUEST)
 

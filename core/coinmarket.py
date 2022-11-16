@@ -21,3 +21,22 @@ CURRENCY_LIST = {
 }
 
 
+# API_LAYER_API_KEY = "o7PyoG9BsdfZ8OJLsxUGdIkSL2EW8biY" # 19bcs1812@gmail.com
+# API_LAYER_API_KEY = "BOFzGqMdAVxVHeUxJ97EPhzcXZzLMhMd" # mantribhanuteja@gmail.com
+API_LAYER_API_KEY = "K6RcQx94GZrxxv0O7Jga7RNwBuiq6Q4c" # rohithbaggam.github@gmail.com
+
+
+APILAYER_API_URL = "https://api.apilayer.com/currency_data/convert?to=INR&from=USD&amount=1"
+APILAYER_payload = {}
+APILAYER_headers= {
+  "apikey": API_LAYER_API_KEY
+}
+"""
+url = "https://api.apilayer.com/currency_data/convert?to=INR&from=USD&amount=1"
+
+payload = {}
+headers= {
+  "apikey": "o7PyoG9BsdfZ8OJLsxUGdIkSL2EW8biY"
+}
+
+"""

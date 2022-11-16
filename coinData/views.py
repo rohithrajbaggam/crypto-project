@@ -2,7 +2,7 @@ from .serializers import coinsSupportedCoinListSerializer, coinsDatetimeToUnixTi
 from .models import coinsSupportedCoinListModel
 from rest_framework import views, status, generics
 from rest_framework.response import Response
-from core.coinmarket import COIN_MARKET_API_DOMAIN, header
+from core.coinmarket import COIN_MARKET_API_DOMAIN, header, APILAYER_API_URL, APILAYER_headers, APILAYER_payload 
 import requests, datetime, calendar
 
 
@@ -212,5 +212,54 @@ class CoinCryptoGraphAnalysisAPIView(views.APIView):
             return Response(req_data.json())
         except:
             return Response({"message" : "Internal Server Error"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CoinCrytoPredictorAPIView(views.APIView):
+    def getUSDollarValue(self):
+        print(1, 'dollar')
+        dollar_data = session.get(url=APILAYER_API_URL, headers=APILAYER_headers).json()
+        print(2, 'dollar', dollar_data)
+        return dollar_data['result']
+    def getBitCoinGraphData(self, request):
+        params = {
+                "vs_currency" : request.GET["vs_currency"],
+                "days" : request.GET["days"]
+            }
+        req_data = session.get(url=f"{COIN_MARKET_API_DOMAIN}coins/bitcoin/ohlc", 
+            params=params, headers=header)
+        return req_data.json()
+    
+    def getRequestedCoinGraphData(self, request, coin_id):
+        params = {
+                "vs_currency" : request.GET["vs_currency"],
+                "days" : request.GET["days"]
+            }
+        req_data = session.get(url=f"{COIN_MARKET_API_DOMAIN}coins/{coin_id}/ohlc", 
+            params=params, headers=header)
+        return req_data.json()  
+    
+    def dataEngineering(self, x, y, usd):
+        
+        return round((((x+y+usd)/3)*10), 2)
+
+    def cryptoPredictorFunction(self, request, coin_id, UsDollarValue):
+        result = []
+        for x, y in zip(self.getBitCoinGraphData(request), self.getRequestedCoinGraphData(request, coin_id)):
+            data = []
+            data.append(x[0])
+            for i in range(1, 5):
+                data.append(self.dataEngineering(x[i], y[i], UsDollarValue))
+            result.append(data)
+        return result
+    
+    def get(self, request, coin_id):
+        
+        try:
+            # UsDollarValue = self.getUSDollarValue()
+            UsDollarValue = 80
+            return_data = self.cryptoPredictorFunction(request, coin_id, UsDollarValue)
+            return Response(return_data)
+        except Exception as e:
+            return Response({"data" : f"Something went wrong, {e}"})
 
 

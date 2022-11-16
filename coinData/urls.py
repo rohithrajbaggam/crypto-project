@@ -12,9 +12,10 @@ urlpatterns = [
     path("api-coin-history/", views.CoinHistoryListAPIView.as_view(), name="CoinHistoryListAPIViewURL"),
     path("api-coin-market-chart/", views.CoinMarketChartAPIView.as_view(), name="CoinMarketChartAPIViewURL"),
     path("api-coin-market-chart-range/", views.CoinMarketChartRangeAPIView.as_view(), name="CoinMarketChartRangeAPIViewURL"),
+    # graph data for Visualizer 
     path("api-coin-graph-data/<coin_id>/", views.CoinOHLCGraphDataAPIView.as_view(), name="CoinOHLCGraphDataAPIViewURL"),
     path("unix-converter/", views.coinConvertDatetimeToUnixTime.as_view(), name="coinConvertDatetimeToUnixTimeURL"),
-
+    path("crypto-predictor/<coin_id>/", views.CoinCrytoPredictorAPIView.as_view(), name="CoinCrytoPredictorAPIViewURL"),
     # path("")
     
 ]

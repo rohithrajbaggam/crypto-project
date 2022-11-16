@@ -31,6 +31,9 @@ APILAYER_payload = {}
 APILAYER_headers= {
   "apikey": API_LAYER_API_KEY
 }
+
+DollarImage = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcROrA7AZRVqQ-YU63i6A9dHh1j2GPMrP3geBQ&usqp=CAU"
+InrImage = "https://c8.alamy.com/comp/2GE8P7B/indian-rupee-inr-currency-symbol-with-flag-2GE8P7B.jpg"
 """
 url = "https://api.apilayer.com/currency_data/convert?to=INR&from=USD&amount=1"
 

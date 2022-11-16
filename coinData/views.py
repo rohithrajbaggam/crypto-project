@@ -2,7 +2,7 @@ from .serializers import coinsSupportedCoinListSerializer, coinsDatetimeToUnixTi
 from .models import coinsSupportedCoinListModel
 from rest_framework import views, status, generics
 from rest_framework.response import Response
-from core.coinmarket import COIN_MARKET_API_DOMAIN, header, APILAYER_API_URL, APILAYER_headers, APILAYER_payload 
+from core.coinmarket import COIN_MARKET_API_DOMAIN, header, APILAYER_API_URL, APILAYER_headers, APILAYER_payload, DollarImage, InrImage 
 import requests, datetime, calendar
 
 
@@ -58,12 +58,20 @@ class singleCoinPriceAPIView(views.APIView):
                 "ids" : request.GET["ids"],
                 "vs_currencies" : request.GET["vs_currencies"]
             }
+            query = coinsSupportedCoinListModel.objects.get(coin_id=request.GET["ids"])
             req_data = session.get(url=f"{COIN_MARKET_API_DOMAIN}simple/price", 
             params=params, headers=header)
+            if request.GET["vs_currencies"] == "usd":
+                currencyImage = DollarImage
+            else:
+                currencyImage = InrImage
             return_data = {
                 "coin" : request.GET["ids"],
                 "currencies" : request.GET["vs_currencies"],
-                "price" : req_data.json()[f'{request.GET["ids"]}'][f'{request.GET["vs_currencies"]}']
+                "price" : req_data.json()[f'{request.GET["ids"]}'][f'{request.GET["vs_currencies"]}'],
+                "coin_image" : query.large,
+                "currency_image" : currencyImage
+
             }
             
             return Response(return_data)
@@ -216,10 +224,9 @@ class CoinCryptoGraphAnalysisAPIView(views.APIView):
 
 class CoinCrytoPredictorAPIView(views.APIView):
     def getUSDollarValue(self):
-        print(1, 'dollar')
         dollar_data = session.get(url=APILAYER_API_URL, headers=APILAYER_headers).json()
-        print(2, 'dollar', dollar_data)
         return dollar_data['result']
+
     def getBitCoinGraphData(self, request):
         params = {
                 "vs_currency" : request.GET["vs_currency"],
@@ -240,11 +247,16 @@ class CoinCrytoPredictorAPIView(views.APIView):
     
     def dataEngineering(self, x, y, usd):
         
-        return round((((x+y+usd)/3)*10), 2)
+        return round((((x+y+usd)/3)*50), 2)
 
     def cryptoPredictorFunction(self, request, coin_id, UsDollarValue):
         result = []
         for x, y in zip(self.getBitCoinGraphData(request), self.getRequestedCoinGraphData(request, coin_id)):
+            # with ThreadPoolExecutor(max_workers=10) as executor:
+            # try:
+            #     [executor.map(self.create_teams_i, [i]) for i in range(230)]
+            # except:
+            #     pass
             data = []
             data.append(x[0])
             for i in range(1, 5):
@@ -261,5 +273,28 @@ class CoinCrytoPredictorAPIView(views.APIView):
             return Response(return_data)
         except Exception as e:
             return Response({"data" : f"Something went wrong, {e}"})
+
+
+from multiprocessing.pool import Pool
+from concurrent.futures import ThreadPoolExecutor
+from timeit import default_timer as timer
+
+def run(self, *args, **kwargs):
+        print("Multi Threading Task, ")
+        start_time = timer()
+        with ThreadPoolExecutor(max_workers=10) as executor:
+            try:
+                [executor.map(self.create_teams_i, [i]) for i in range(230)]
+            except:
+                pass
+            try:
+
+                [executor.map(self.create_player_task, [i]) for i in range(5000)]
+            except:
+                pass
+        end_time = timer()
+        print("Mutli-Threading Task time, ", end_time - start_time)
+
+        start_time = timer()
 
 

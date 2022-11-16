@@ -4,7 +4,7 @@ urlpatterns = [
     path("support-coins-list/", views.coinsSupportedCoinListAPIView.as_view(), name="coinsSupportedCoinListAPIViewURL"),
     path("coins-list/", views.coinsCoinListAPIView.as_view(), name="coinsCoinListAPIViewURL"),
     path("save-coins/", views.coinsSavedCoinstoDataBase.as_view(), name="coinsSavedCoinstoDataBaseURL"),
-
+    
     path("single-coin-price/", views.singleCoinPriceAPIView.as_view(), name="singleCoinPriceAPIViewURL"),
     path("api-coin-list/", views.CoinListAPIView.as_view(), name="CoinListAPIViewURL"),
     path("api-coin-list/<coin_id>/", views.CoinDetailsAPIView.as_view(), name="CoinDetailsAPIViewURL"),

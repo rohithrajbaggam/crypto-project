@@ -250,16 +250,19 @@ class CoinCrytoPredictorAPIView(views.APIView):
             params=params, headers=header)
         return req_data.json()  
     
-    def dataEngineering(self, x, y, usd):
-        return round((((x+y+usd)/3)*(100+(round(random.random(), 2)*0.3))), 2)
+    def dataEngineering(self, x, usd):
+        return (x)
 
     def cryptoPredictorFunction(self, request, coin_id, UsDollarValue):
         result = []
-        for x, y in zip(self.getBitCoinGraphData(request), self.getRequestedCoinGraphData(request, coin_id)):
+        count=len(self.getRequestedCoinGraphData(request, coin_id))-1
+        for x in self.getRequestedCoinGraphData(request, coin_id):
             data = []
-            data.append(x[0])
+            # data.append(x[0])
+            data.append(count)
+            count = count - 1 
             for i in range(1, 5):
-                data.append(self.dataEngineering(x[i], y[i], UsDollarValue))
+                data.append(self.dataEngineering(x[i], UsDollarValue))
             result.append(data)
         return result
     # def cryptoPredictorFunction(self, request, coin_id, UsDollarValue):

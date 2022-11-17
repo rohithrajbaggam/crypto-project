@@ -3,7 +3,7 @@ from .models import coinsSupportedCoinListModel
 from rest_framework import views, status, generics
 from rest_framework.response import Response
 from core.coinmarket import COIN_MARKET_API_DOMAIN, header, APILAYER_API_URL, APILAYER_headers, APILAYER_payload, DollarImage, InrImage 
-import requests, datetime, calendar
+import requests, datetime, calendar, random
 
 
 session = requests.Session()
@@ -198,6 +198,7 @@ class coinConvertDatetimeToUnixTime(generics.GenericAPIView):
     serializer_class = coinsDatetimeToUnixTimeSerializer
     def post(self, request):
         try:
+            print('reqest-data', request.data)
             date_list = list(str(request.data["datetime"]).split("-"))
             date_time = datetime.datetime(int(date_list[0]), int(date_list[1]), int(date_list[2]), 0, 0).utcnow()
             unix_timestamp =  calendar.timegm(date_time.utctimetuple())
@@ -224,8 +225,12 @@ class CoinCryptoGraphAnalysisAPIView(views.APIView):
 
 class CoinCrytoPredictorAPIView(views.APIView):
     def getUSDollarValue(self):
-        dollar_data = session.get(url=APILAYER_API_URL, headers=APILAYER_headers).json()
-        return dollar_data['result']
+        try:
+            dollar_data = session.get(url=APILAYER_API_URL, headers=APILAYER_headers).json()
+            x = dollar_data['result']
+            return x
+        except:
+            return 80
 
     def getBitCoinGraphData(self, request):
         params = {
@@ -246,55 +251,37 @@ class CoinCrytoPredictorAPIView(views.APIView):
         return req_data.json()  
     
     def dataEngineering(self, x, y, usd):
-        
-        return round((((x+y+usd)/3)*50), 2)
+        return round((((x+y+usd)/3)*(100+(round(random.random(), 2)*0.3))), 2)
 
     def cryptoPredictorFunction(self, request, coin_id, UsDollarValue):
         result = []
         for x, y in zip(self.getBitCoinGraphData(request), self.getRequestedCoinGraphData(request, coin_id)):
-            # with ThreadPoolExecutor(max_workers=10) as executor:
-            # try:
-            #     [executor.map(self.create_teams_i, [i]) for i in range(230)]
-            # except:
-            #     pass
             data = []
             data.append(x[0])
             for i in range(1, 5):
                 data.append(self.dataEngineering(x[i], y[i], UsDollarValue))
             result.append(data)
         return result
-    
+    # def cryptoPredictorFunction(self, request, coin_id, UsDollarValue):
+    #     result = []
+    #     for x, y in zip(self.getBitCoinGraphData(request), self.getRequestedCoinGraphData(request, coin_id)):
+    #         data = []
+    #         data.append(x[0])
+    #         for i in range(1, 5):
+    #             data.append(self.dataEngineering(x[i], y[i], UsDollarValue))
+    #         result.append(data)
+    #     return result
     def get(self, request, coin_id):
         
         try:
             # UsDollarValue = self.getUSDollarValue()
             UsDollarValue = 80
             return_data = self.cryptoPredictorFunction(request, coin_id, UsDollarValue)
-            return Response(return_data)
+            return Response(return_data[::-1])
         except Exception as e:
             return Response({"data" : f"Something went wrong, {e}"})
 
 
-from multiprocessing.pool import Pool
-from concurrent.futures import ThreadPoolExecutor
-from timeit import default_timer as timer
 
-def run(self, *args, **kwargs):
-        print("Multi Threading Task, ")
-        start_time = timer()
-        with ThreadPoolExecutor(max_workers=10) as executor:
-            try:
-                [executor.map(self.create_teams_i, [i]) for i in range(230)]
-            except:
-                pass
-            try:
-
-                [executor.map(self.create_player_task, [i]) for i in range(5000)]
-            except:
-                pass
-        end_time = timer()
-        print("Mutli-Threading Task time, ", end_time - start_time)
-
-        start_time = timer()
 
 

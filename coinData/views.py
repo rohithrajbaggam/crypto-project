@@ -249,9 +249,32 @@ class CoinCrytoPredictorAPIView(views.APIView):
         req_data = session.get(url=f"{COIN_MARKET_API_DOMAIN}coins/{coin_id}/ohlc", 
             params=params, headers=header)
         return req_data.json()  
-    
-    def dataEngineering(self, x, usd):
-        return (x)
+
+    def dataEngineering(self, x, usd, i, lis):
+        count = random.randint(1, 10)
+
+        if count % 2 ==0 :
+            x += ((x*0.001*count))
+        else:
+            x -= ((x*0.001*count))
+        return x
+    # 1668708000000
+    #0.00000000000001
+    # def dataEngineering(self, x, usd, i, lis):
+    #     _sum = 0
+    #     count = 0
+    #     print('lis', lis)
+    #     try:
+    #         for k in range(1, 5):
+    #             if k != i:
+    #                 _sum += lis[k]
+    #                 count+=1
+    #         print(_sum, count)
+    #         main_sum = float(_sum/count)
+    #         return main_sum
+    #     except Exception as e:
+    #         print(e)
+    #         return x
 
     def cryptoPredictorFunction(self, request, coin_id, UsDollarValue):
         result = []
@@ -261,19 +284,13 @@ class CoinCrytoPredictorAPIView(views.APIView):
             # data.append(x[0])
             data.append(count)
             count = count - 1 
+            
             for i in range(1, 5):
-                data.append(self.dataEngineering(x[i], UsDollarValue))
+                data.append(self.dataEngineering(x[i], UsDollarValue, i, x))
+
             result.append(data)
         return result
-    # def cryptoPredictorFunction(self, request, coin_id, UsDollarValue):
-    #     result = []
-    #     for x, y in zip(self.getBitCoinGraphData(request), self.getRequestedCoinGraphData(request, coin_id)):
-    #         data = []
-    #         data.append(x[0])
-    #         for i in range(1, 5):
-    #             data.append(self.dataEngineering(x[i], y[i], UsDollarValue))
-    #         result.append(data)
-    #     return result
+
     def get(self, request, coin_id):
         
         try:
@@ -283,8 +300,5 @@ class CoinCrytoPredictorAPIView(views.APIView):
             return Response(return_data[::-1])
         except Exception as e:
             return Response({"data" : f"Something went wrong, {e}"})
-
-
-
 
 
